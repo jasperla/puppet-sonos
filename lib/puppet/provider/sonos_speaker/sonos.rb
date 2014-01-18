@@ -175,8 +175,8 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
   def playmode_set?(mode)
     speakers = get_speakers(@resource[:name])
     res = speakers.first.get_playmode
-    res[mode] == true ? set = true : set = false
-    Puppet.debug("#{resource[:name]} playmode #{mode} is #{set.to_s}")
-    set.to_s
+    res[mode] == true ? set = 'true' : set = 'false'
+    Puppet.debug("#{resource[:name]} playmode #{mode} is #{set}")
+    set
   end
 end
