@@ -1,0 +1,8 @@
+name    'jasper-sonos'
+version '0.1.0'
+source 'UNKNOWN'
+author 'Jasper Lievisse Adriaanse'
+license 'ISC'
+summary 'UNKNOWN'
+description 'UNKNOWN'
+project_page 'UNKNOWN'
