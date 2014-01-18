@@ -64,6 +64,33 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     self.send_message('volume=', value)
   end
 
+  def crossfade
+    self.playmode_set?(:crossfade)
+  end
+
+  def crossfade=(value)
+    self.coerce_bool(value) ? cmd = 'on' : cmd = 'off'
+    self.send_message("crossfade_#{cmd}")
+  end
+
+  def shuffle
+    self.playmode_set?(:shuffle)
+  end
+
+  def shuffle=(value)
+    self.coerce_bool(value) ? cmd = 'on' : cmd = 'off'
+    self.send_message("shuffle_#{cmd}")
+  end
+
+  def repeat
+    self.playmode_set?(:repeat)
+  end
+
+  def repeat=(value)
+    self.coerce_bool(value) ? cmd = 'on' : cmd = 'off'
+    self.send_message("repeat_#{cmd}")
+  end
+
   # Figure out if the speaker is already playing (present) has stopped (absent).
   def exists?
     system = Sonos::System.new
@@ -143,5 +170,13 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     when true, :true
       true
     end
+  end
+
+  def playmode_set?(mode)
+    speakers = get_speakers(@resource[:name])
+    res = speakers.first.get_playmode
+    res[mode] == true ? set = true : set = false
+    Puppet.debug("#{resource[:name]} playmode #{mode} is #{set.to_s}")
+    set.to_s
   end
 end

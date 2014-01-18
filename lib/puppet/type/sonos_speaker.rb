@@ -38,4 +38,25 @@ EOT
       fail("Invalid volume #{value}, must be an integer between 0 and 100") unless value =~ /^[0-9]+$/
     end
   end
+
+  newproperty(:crossfade) do
+    desc 'Set the crossfade playmode for the speaker'
+
+    defaultto :false
+    newvalues(:true, :false)
+  end
+
+  newproperty(:repeat) do
+    desc 'Set the repeat playmode for the speaker'
+
+    defaultto :false
+    newvalues(:true, :false)
+  end
+
+  newproperty(:shuffle) do
+    desc 'Set the shuffle playmode for the speaker'
+
+    defaultto :false
+    newvalues(:true, :false)
+  end
 end
