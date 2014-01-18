@@ -61,7 +61,7 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
       value = true
     end
 
-    self.send_message('loudness=', false)
+    self.send_message('loudness=', value)
   end
 
   def volume
