@@ -146,6 +146,6 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     fail("Could not find speaker #{resource[:name]}") if speakers.size == 0
     answer = speakers.first.send(msg)
     Puppet.debug("#{resource[:name]} <= #{msg} <= #{answer}")
-    answer
+    answer.to_s
   end
 end

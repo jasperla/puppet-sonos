@@ -23,7 +23,6 @@ ToDo
   - `sonos_queue` to manage the queue for a given speaker
 - Implement some notion of groups and/or zones.
 - ensure => playing/stopped/paused
-- Fixup idempotency, i.e. bass changed '10' to '10'
 
 Dependencies
 ------------
