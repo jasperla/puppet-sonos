@@ -113,29 +113,23 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     present
   end
 
-  # Send a specified message to the speakers.
-  def send_message(msg, *args)
+  def get_speakers(name)
     system = Sonos::System.new
     speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
     fail("Could not find speaker #{resource[:name]}") if speakers.size == 0
+    speakers
+  end
+
+  # Send a specified message to the speakers.
+  def send_message(msg, *args)
+    speakers = get_speakers(@resource[:name])
     Puppet.debug("#{resource[:name]} => #{msg} => #{args}")
     speakers.each { |s| s.send msg, *args }
   end
 
-  # Send a specified message to the speakers.
-  def send_command(command, *arg)
-    system = Sonos::System.new
-    speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
-    fail("Could not find speaker #{resource[:name]}") if speakers.size == 0
-    Puppet.debug("#{resource[:name]} => #{command} => #{arg}")
-    speakers.each { |s| s.send command, *arg }
-  end
-
   # Receive a message from the first speaker matching the name, after sending a query.
   def receive_message(msg)
-    system = Sonos::System.new
-    speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
-    fail("Could not find speaker #{resource[:name]}") if speakers.size == 0
+    speakers = get_speakers(@resource[:name])
     answer = speakers.first.send(msg)
     Puppet.debug("#{resource[:name]} <= #{msg} <= #{answer}")
     answer.to_s
