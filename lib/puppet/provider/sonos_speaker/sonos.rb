@@ -6,7 +6,7 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
   # List all available speakers in the current Sonos setup
   def self.instances
     speakers = []
-    fields = [:name, :ensure, :volume, :bass, :treble]
+    fields = [:name, :ensure, :volume, :bass, :treble, :loudness]
     hash = {}
     system = Sonos::System.new
 
@@ -14,6 +14,7 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
       hash[:name] = speaker.name
       hash[:volume] = speaker.volume
       hash[:bass] = speaker.bass
+      hash[:loudness] = speaker.loudness
       hash[:treble] = speaker.treble
 
       speakers << new(hash)
@@ -47,6 +48,22 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     self.send_message('treble=', value)
   end
 
+  def loudness
+    self.receive_message('loudness')
+  end
+
+  def loudness=(value)
+    # coerse value into a real boolean
+    case value
+    when false, :false
+      value = false
+    when true, :true
+      value = true
+    end
+
+    self.send_message('loudness=', false)
+  end
+
   def volume
     self.receive_message('volume')
   end
@@ -57,7 +74,6 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
 
   # Figure out if the speaker is already playing (present) has stopped (absent).
   def exists?
-    Puppet.debug("hi")
     system = Sonos::System.new
     speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
     if speakers.size < 1

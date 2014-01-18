@@ -25,6 +25,13 @@ EOT
     end
   end
 
+  newproperty(:loudness) do
+    desc 'Toggle the loudness of the speaker'
+
+    defaultto :true
+    newvalues(:true, :false)
+  end
+
   newproperty(:volume) do
     desc 'Set the volume for the speaker to a value between 0 and 100'
     validate do |value|
