@@ -53,15 +53,7 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
   end
 
   def loudness=(value)
-    # coerse value into a real boolean
-    case value
-    when false, :false
-      value = false
-    when true, :true
-      value = true
-    end
-
-    self.send_message('loudness=', value)
+    self.send_message('loudness=', self.coerce_bool(value))
   end
 
   def volume
@@ -147,5 +139,15 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     answer = speakers.first.send(msg)
     Puppet.debug("#{resource[:name]} <= #{msg} <= #{answer}")
     answer.to_s
+  end
+
+  def coerce_bool(value)
+    # coerce value into a real boolean
+    case value
+    when false, :false
+      false
+    when true, :true
+      true
+    end
   end
 end
