@@ -6,19 +6,10 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
   # List all available speakers in the current Sonos setup
   def self.instances
     speakers = []
-    fields = [:name, :ensure, :volume, :bass, :treble, :loudness]
-    hash = {}
     system = Sonos::System.new
 
     system.speakers.each do |speaker|
-      hash[:name] = speaker.name
-      hash[:volume] = speaker.volume
-      hash[:bass] = speaker.bass
-      hash[:loudness] = speaker.loudness
-      hash[:treble] = speaker.treble
-
-      speakers << new(hash)
-      hash = {}
+      speakers << new(:name => speaker.name)
     end
 
     return speakers
