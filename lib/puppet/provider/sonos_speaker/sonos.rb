@@ -15,28 +15,13 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     return speakers
   end
 
-  def create
-    self.send_message('play')
-  end
-
-  def destroy
-    self.send_message('stop')
-  end
-
+  # Equalizer-related methods
   def bass
     self.receive_message('bass')
   end
 
   def bass=(value)
     self.send_message('bass=', value)
-  end
-
-  def treble
-    self.receive_message('treble')
-  end
-
-  def treble=
-    self.send_message('treble=', value)
   end
 
   def loudness
@@ -47,14 +32,15 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     self.send_message('loudness=', self.coerce_bool(value))
   end
 
-  def volume
-    self.receive_message('volume')
+  def treble
+    self.receive_message('treble')
   end
 
-  def volume=(value)
-    self.send_message('volume=', value)
+  def treble=
+    self.send_message('treble=', value)
   end
 
+  # Playmode-related methods
   def crossfade
     self.playmode_set?(:crossfade)
   end
@@ -82,6 +68,7 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     self.send_message("repeat_#{cmd}")
   end
 
+  # Volume control methods
   def mute
     self.receive_message('muted?')
   end
@@ -89,6 +76,23 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
   def mute=(value)
     self.coerce_bool(value) ? cmd = 'mute' : cmd = 'unmute'
     self.send_message(cmd)
+  end
+
+  def volume
+    self.receive_message('volume')
+  end
+
+  def volume=(value)
+    self.send_message('volume=', value)
+  end
+
+  # ensurable-related methods
+  def create
+    self.send_message('play')
+  end
+
+  def destroy
+    self.send_message('stop')
   end
 
   # Figure out if the speaker is already playing (present) has stopped (absent).
@@ -140,6 +144,7 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     present
   end
 
+  # Local helper methods
   def get_speakers(name)
     system = Sonos::System.new
     speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
