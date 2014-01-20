@@ -8,6 +8,7 @@ Types
 -----
 
 - `sonos_speaker`
+- `sonos`
 
 Facts
 -----
@@ -19,7 +20,6 @@ ToDo
 ----
 
 - Add additional types such as:
-  - `sonos` to manage the full Sonos setup and options that span multiple speakers/groups/zones.
   - `sonos_queue` to manage the queue for a given speaker
 - Implement some notion of groups and/or zones.
 - ensure => playing/stopped/paused
