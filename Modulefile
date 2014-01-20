@@ -1,5 +1,5 @@
 name    'jasper-sonos'
-version '0.1.0'
+version '0.1.2'
 source 'git://github.com/jasperla/puppet-sonos.git'
 author 'Jasper Lievisse Adriaanse'
 license 'ISC'
