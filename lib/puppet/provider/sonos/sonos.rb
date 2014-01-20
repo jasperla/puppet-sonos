@@ -3,6 +3,26 @@ require 'sonos'
 Puppet::Type.type(:sonos).provide(:sonos) do
   desc 'Manage a Sonos system.'
 
+  # There's no real way of telling if speakers are in a party right now, so
+  # the heuristic used here is if there are more than 1 speakers, but not > 1
+  # group, then it's a party!
+  # XXX: This is totally untested due to lack of multiple speakers.
+  def party
+    party?
+  end
+
+  # Enter party mode; only makes sense for multiple speakers.
+  def party=(value)
+    system = Sonos::System.new
+    return false if not party?
+
+    if @resource[:party_master]
+      self.apply_all('party_mode', @resource[:party_master])
+    else
+      self.apply_all('party_mode')
+    end
+  end
+
   def pause_all
     (not self.playing?).to_s
   end
@@ -23,9 +43,18 @@ Puppet::Type.type(:sonos).provide(:sonos) do
     self.apply_all(cmd)
   end
 
-  def apply_all(cmd)
+  def apply_all(cmd, *args)
     system = Sonos::System.new
-    system.send(cmd)
+    system.send(cmd, *args)
+  end
+
+  def party?
+    system = Sonos::System.new
+
+    # Ensure some pre-conditions for a party are met.
+    return false if system.speakers.size < 2 or system.groups.size < 1
+
+    system.groups.size == '1' ? 'true' : 'false'
   end
 
   def playing?

@@ -28,4 +28,15 @@ EOT
     defaultto :false
     newvalues(:true, :false)
   end
+
+  newproperty(:party) do
+    desc 'Party mode!'
+
+    defaultto :false
+    newvalues(:true, :false)
+  end
+
+  newparam(:party_master) do
+    desc 'Name of the party master speaker.'
+  end
 end
