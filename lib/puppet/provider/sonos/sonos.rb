@@ -8,13 +8,13 @@ Puppet::Type.type(:sonos).provide(:sonos) do
   # group, then it's a party!
   # XXX: This is totally untested due to lack of multiple speakers.
   def party
-    party?
+    party?.to_s
   end
 
   # Enter party mode; only makes sense for multiple speakers.
   def party=(value)
     system = Sonos::System.new
-    return false if not party?
+    return 'false' if not party?
 
     if @resource[:party_master]
       self.apply_all('party_mode', @resource[:party_master])
@@ -55,7 +55,7 @@ Puppet::Type.type(:sonos).provide(:sonos) do
     # Ensure some pre-conditions for a party are met.
     return false if system.speakers.size < 2 or system.groups.size < 1
 
-    system.groups.size == '1' ? 'true' : 'false'
+    system.groups.size == '1' ? true : false
   end
 
   def playing?
