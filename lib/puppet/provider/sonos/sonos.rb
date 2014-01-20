@@ -43,6 +43,7 @@ Puppet::Type.type(:sonos).provide(:sonos) do
     self.apply_all(cmd)
   end
 
+  # Local helper methods
   def apply_all(cmd, *args)
     system = Sonos::System.new
     system.send(cmd, *args)
@@ -104,29 +105,6 @@ Puppet::Type.type(:sonos).provide(:sonos) do
     is_playing
   end
 
-  # Local helper methods
-  def get_speakers(name)
-    system = Sonos::System.new
-    speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
-    fail("Could not find speaker #{resource[:name]}") if speakers.size == 0
-    speakers
-  end
-
-  # Send a specified message to the speakers.
-  def send_message(msg, *args)
-    speakers = get_speakers(@resource[:name])
-    Puppet.debug("#{resource[:name]} => #{msg} => #{args}")
-    speakers.each { |s| s.send msg, *args }
-  end
-
-  # Receive a message from the first speaker matching the name, after sending a query.
-  def receive_message(msg)
-    speakers = get_speakers(@resource[:name])
-    answer = speakers.first.send(msg)
-    Puppet.debug("#{resource[:name]} <= #{msg} <= #{answer}")
-    answer.to_s
-  end
-
   def coerce_bool(value)
     # coerce value into a real boolean
     case value
@@ -135,13 +113,5 @@ Puppet::Type.type(:sonos).provide(:sonos) do
     when true, :true
       true
     end
-  end
-
-  def playmode_set?(mode)
-    speakers = get_speakers(@resource[:name])
-    res = speakers.first.get_playmode
-    res[mode] == true ? set = 'true' : set = 'false'
-    Puppet.debug("#{resource[:name]} playmode #{mode} is #{set}")
-    set
   end
 end
