@@ -106,24 +106,16 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
       # not playing). It depends on the audio source (streaming radio or
       # playing from the queue) how we can check the state.
 
-      # In order to figure out what the device is actually playing right now,
-      # we need to retrieve the item from the queue with the position that the
-      # currently playing track has.
+      # When playing radio the artist and album are left empty, which is a simple
+      # enough heuristic to rely on here.
       speaker = speakers.first
-      queue_head = speaker.queue[:items][speaker.now_playing[:queue_position].to_i - 1]
       playing = speaker.now_playing
 
-      # Items on the queue have an :id which becomes their :uri when they are
-      # actually the currently playing track. If the :id is the :uri, then we are
-      # thus playing from the queue. Otherwise we're streaming radio as radio stations
-      # are not put onto the queue.
-      begin
-        queue_head[:id] != playing[:uri] and source = :radio or source = :queue
-      rescue
-        # Certain radio stations report an out of bounds :queue_position
+      if playing.fetch(:album) == '' and playing.fetch(:artist) == ''
         source = :radio
+      else
+        source = :queue
       end
-
       # When streaming radio is the source, the :current_position is set to 0:00:00
       # when paused/stopped.
       # In case of :queue there is no way to figure out if it's playing aside from
