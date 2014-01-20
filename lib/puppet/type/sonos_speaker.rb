@@ -59,4 +59,11 @@ EOT
     defaultto :false
     newvalues(:true, :false)
   end
+
+  newproperty(:mute) do
+    desc 'Mute the speaker'
+
+    defaultto :false
+    newvalues(:true, :false)
+  end
 end

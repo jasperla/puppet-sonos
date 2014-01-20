@@ -82,6 +82,15 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
     self.send_message("repeat_#{cmd}")
   end
 
+  def mute
+    self.receive_message('muted?')
+  end
+
+  def mute=(value)
+    self.coerce_bool(value) ? cmd = 'mute' : cmd = 'unmute'
+    self.send_message(cmd)
+  end
+
   # Figure out if the speaker is already playing (present) has stopped (absent).
   def exists?
     system = Sonos::System.new
