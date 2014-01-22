@@ -111,6 +111,8 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
       speaker = speakers.first
       playing = speaker.now_playing
 
+      return false if playing.nil?
+
       if playing.fetch(:album) == '' and playing.fetch(:artist) == ''
         source = :radio
       else
