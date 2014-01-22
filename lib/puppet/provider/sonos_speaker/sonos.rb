@@ -96,6 +96,8 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
   end
 
   # Figure out if the speaker is already playing (present) has stopped (absent).
+  # XXX: This can be greatly simplified once https://github.com/soffes/sonos/pull/24
+  # has been merged.
   def exists?
     system = Sonos::System.new
     speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }

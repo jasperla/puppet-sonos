@@ -58,6 +58,8 @@ Puppet::Type.type(:sonos).provide(:sonos) do
     system.groups.size == '1' ? true : false
   end
 
+  # XXX: This can be greatly simplified once https://github.com/soffes/sonos/pull/24
+  # has been merged.
   def playing?
     system = Sonos::System.new
     speakers = system.speakers
