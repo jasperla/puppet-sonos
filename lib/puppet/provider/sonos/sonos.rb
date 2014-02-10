@@ -58,48 +58,20 @@ Puppet::Type.type(:sonos).provide(:sonos) do
     system.groups.size == '1' ? true : false
   end
 
-  # XXX: This can be greatly simplified once https://github.com/soffes/sonos/pull/24
-  # has been merged.
   def playing?
     system = Sonos::System.new
     speakers = system.speakers
+    is_playing = true
+
     if speakers.size < 1
       fail("No speakers associated to Sonos system.")
     else
-      is_playing = false
-      # There is no clear way to check which state a speaker is in (playing or
-      # not playing). It depends on the audio source (streaming radio or
-      # playing from the queue) how we can check the state.
       speakers.each do |speaker|
-        return false if speaker.now_playing.nil?
-
-        # When playing radio the artist and album are left empty, which is a simple
-        # enough heuristic to rely on here.
-        playing = speaker.now_playing
-
-        if playing.fetch(:album) == '' and playing.fetch(:artist) == ''
-          source = :radio
-        else
-          source = :queue
+        if speaker.get_player_state != 'PLAYING'
+          is_playing = false
         end
 
-        # When streaming radio is the source, the :current_position is set to 0:00:00
-        # when paused/stopped.
-        # In case of :queue there is no way to figure out if it's playing aside from
-        # getting the current position and checking again 1 second later to see if the
-        # clock has ticked.
-        case source
-          when :radio
-            playing[:current_position].gsub(/:/, '').to_i > 0 ? is_playing = true : is_playing = false
-          when :queue
-            old = playing[:current_position].gsub(/:/, '').to_i
-            sleep 1
-            now = speaker.now_playing[:current_position].gsub(/:/, '').to_i
-
-            old != now ? is_playing = true : is_playing = false
-        end
-
-        # Take a shortcut out if the latest speaker isn't playing
+        # Take a shortcut out if the last speaker isn't playing.
         break if not is_playing
       end
     end

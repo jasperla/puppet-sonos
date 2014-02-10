@@ -27,8 +27,8 @@ ToDo
 Dependencies
 ------------
 
-- The types and facts require that the 'sonos' gem is installed.
-- A Sonos system :-) This module was tested with a Play:1.
+- The types and facts require that the 'sonos' gem (> 0.3.5) is installed.
+- A Sonos system :-) This module was tested with Play:1 and Playbar.
 
 License
 -------

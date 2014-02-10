@@ -96,44 +96,15 @@ Puppet::Type.type(:sonos_speaker).provide(:sonos) do
   end
 
   # Figure out if the speaker is already playing (present) has stopped (absent).
-  # XXX: This can be greatly simplified once https://github.com/soffes/sonos/pull/24
-  # has been merged.
   def exists?
     system = Sonos::System.new
-    speakers = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
-    if speakers.size < 1
+    speaker = system.speakers.select { |s| s.name.downcase == @resource[:name].downcase }
+    present = false
+    if speaker.size < 1
       fail("Speaker #{resource[:name]} not associated to network?")
     else
-      # There is no clear way to check which state a speaker is in (playing or
-      # not playing). It depends on the audio source (streaming radio or
-      # playing from the queue) how we can check the state.
-
-      # When playing radio the artist and album are left empty, which is a simple
-      # enough heuristic to rely on here.
-      speaker = speakers.first
-      playing = speaker.now_playing
-
-      return false if playing.nil?
-
-      if playing.fetch(:album) == '' and playing.fetch(:artist) == ''
-        source = :radio
-      else
-        source = :queue
-      end
-      # When streaming radio is the source, the :current_position is set to 0:00:00
-      # when paused/stopped.
-      # In case of :queue there is no way to figure out if it's playing aside from
-      # getting the current position and checking again 1 second later to see if the
-      # clock has ticked.
-      case source
-        when :radio
-          playing[:current_position].gsub(/:/, '').to_i > 0 ? present = true : present = false
-        when :queue
-          old = playing[:current_position].gsub(/:/, '').to_i
-          sleep 1
-          now = speaker.now_playing[:current_position].gsub(/:/, '').to_i
-
-          old != now ? present = true : present = false
+      if speaker[0].get_player_state[:state] == 'PLAYING'
+        present = true
       end
     end
 
